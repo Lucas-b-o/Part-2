@@ -5,6 +5,7 @@ const App = () => {
   const [countries, setCountries] = useState(null)
   const [list, setList] = useState(null)
   const [text, setText] = useState('')
+  const [show, setShow] = useState(null)
 
   useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all').then(response =>
@@ -18,6 +19,7 @@ const App = () => {
         return (countrie.name.common.toUpperCase()).includes(text.toUpperCase())
       }))
     }
+    setShow(null)
   }, [countries, text])
 
   if (!countries) {
@@ -46,12 +48,32 @@ const App = () => {
               ))}
             </ul>
           </div>
-          <img alt="flag" src={list[0].flags.png}/>
+          <img alt="flag" src={list[0].flags.png} />
         </>
       ) : (
         list?.length < 11 ? (
-          list?.map(content => <p key={content.name.common}>{content.name.common}</p>)
+          list?.map(content => <p key={content.name.common}>{content.name.common} <button onClick={() => setShow(content)}>Show</button></p>)
         ) : 'Too many matches, specify another filter')}
+      {(list?.length > 1 && show) ? (
+        <>
+        <h2>{show.name.common}</h2>
+        <div>
+          <p>Capital {show.capital}</p>
+          <p>Area {show.area}</p>
+        </div>
+        <div>
+          <h3>Languages</h3>
+          <ul>
+            {Object.entries(show.languages).map(([key, value]) => (
+              <li key={key}>
+                {value}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <img alt="flag" src={show.flags.png} />
+      </>
+      ): null}
     </div>
   )
 }
