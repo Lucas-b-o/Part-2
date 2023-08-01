@@ -34,6 +34,14 @@ const App = () => {
     setNewNumber('')
   }
 
+  const handleDelete = (id) => {
+    if (window.confirm("Do you really want delete this number?")) {
+      personsService.deleteNumber(id).then(response => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -47,7 +55,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Persons filterName={filterName} persons={persons} />
+      <Persons filterName={filterName} persons={persons} handleDelete={handleDelete} />
     </div>
   )
 }
