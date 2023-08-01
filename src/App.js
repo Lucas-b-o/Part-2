@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personsService.getAll().then((response) => {
@@ -35,6 +36,11 @@ const App = () => {
           setTimeout(() => {
             setNotificationMessage(null)
           }, 5000)
+        }).catch(error => {
+          setErrorMessage(`Information of ${newName} has already benn removed from server`)
+          setErrorMessage(() => {
+            setNotificationMessage(null)
+          }, 5000)
         })
       }
     } else {
@@ -45,9 +51,13 @@ const App = () => {
           setTimeout(() => {
             setNotificationMessage(null)
           }, 5000)
+        }).catch(error => {
+          setErrorMessage(`Error`)
+          setErrorMessage(() => {
+            setNotificationMessage(null)
+          }, 5000)
         })
     }
-    
     setNewName('')
     setNewNumber('')
   }
@@ -56,6 +66,11 @@ const App = () => {
     if (window.confirm("Do you really want delete this number?")) {
       personsService.deleteNumber(id).then(response => {
         setPersons(persons.filter(person => person.id !== id))
+      }).catch(error => {
+        setErrorMessage(`Error on delete`)
+        setErrorMessage(() => {
+          setNotificationMessage(null)
+        }, 5000)
       })
     }
   }
@@ -63,7 +78,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMessage}/>
+      <Notification message={notificationMessage} color='green'/>
+      <Notification message={errorMessage} color='red'/>
       <Filter handleFilterNameChange={handleFilterNameChange} filterName={filterName} />
       <h2>add a new</h2>
       <PersonForm
