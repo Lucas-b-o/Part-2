@@ -22,14 +22,20 @@ const App = () => {
 
   const handleSubmitForm = (event) => {
     event.preventDefault()
-    persons.filter((person) => person.name === newName).length > 0 ?
-      alert(`${newName} is already added to phonebook`)
-      : (
-        personsService.create({ name: newName, number: newNumber, id: persons.length + 1 })
-          .then(response => {
-            setPersons(persons.concat(response))
-          })
-      )
+
+    const person = persons.filter(person => person.name === newName)
+
+    person.length > 0 ? (
+      window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`) ?
+        personsService.update(person[0].id, {...person[0], number: newNumber}).then(response => {
+          setPersons(persons.map(oldPerson => oldPerson.id !== person[0].id ? oldPerson : response))
+        }) : null
+    ) : (
+      personsService.create({ name: newName, number: newNumber, id: persons.length + 1 })
+        .then(response => {
+          setPersons(persons.concat(response))
+        })
+    )
     setNewName('')
     setNewNumber('')
   }
