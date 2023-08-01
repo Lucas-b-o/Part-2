@@ -14,7 +14,7 @@ const App = () => {
     axios.get('http://localhost:3001/persons').then((response) => {
       setPersons(response.data)
     })
-  },[])
+  }, [])
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
@@ -24,8 +24,12 @@ const App = () => {
     event.preventDefault()
     persons.filter((person) => person.name === newName).length > 0 ?
       alert(`${newName} is already added to phonebook`)
-      :
-      setPersons(persons.concat({ name: newName, number: newNumber }))
+      : (
+        axios.post('http://localhost:3001/persons', { name: newName, number: newNumber, id: persons.length + 1 })
+          .then(response => {
+            setPersons(persons.concat(response.data))
+          })
+      )
     setNewName('')
     setNewNumber('')
   }
@@ -33,7 +37,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter handleFilterNameChange={handleFilterNameChange} filterName={filterName}/>
+      <Filter handleFilterNameChange={handleFilterNameChange} filterName={filterName} />
       <h2>add a new</h2>
       <PersonForm
         handleSubmitForm={handleSubmitForm}
