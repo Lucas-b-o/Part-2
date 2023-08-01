@@ -3,12 +3,14 @@ import Persons from './components/Persons'
 import { useEffect, useState } from 'react'
 import personsService from './services/persons'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     personsService.getAll().then((response) => {
@@ -25,17 +27,27 @@ const App = () => {
 
     const person = persons.filter(person => person.name === newName)
 
-    person.length > 0 ? (
-      window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`) ?
+    if (persons.filter(person => person.name === newName).length > 0) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         personsService.update(person[0].id, {...person[0], number: newNumber}).then(response => {
           setPersons(persons.map(oldPerson => oldPerson.id !== person[0].id ? oldPerson : response))
-        }) : null
-    ) : (
+          setNotificationMessage('Update ' + newName)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 5000)
+        })
+      }
+    } else {
       personsService.create({ name: newName, number: newNumber, id: persons.length + 1 })
         .then(response => {
           setPersons(persons.concat(response))
+          setNotificationMessage('Added ' + newName)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 5000)
         })
-    )
+    }
+    
     setNewName('')
     setNewNumber('')
   }
@@ -51,6 +63,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage}/>
       <Filter handleFilterNameChange={handleFilterNameChange} filterName={filterName} />
       <h2>add a new</h2>
       <PersonForm
