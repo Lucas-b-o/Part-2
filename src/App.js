@@ -44,7 +44,7 @@ const App = () => {
         })
       }
     } else {
-      personsService.create({ name: newName, number: newNumber, id: persons.length + 1 })
+      personsService.create({ name: newName, number: newNumber })
         .then(response => {
           setPersons(persons.concat(response))
           setNotificationMessage('Added ' + newName)
