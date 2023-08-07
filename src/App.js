@@ -30,7 +30,7 @@ const App = () => {
 
     if (persons.filter(person => person.name === newName).length > 0) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        personsService.update(person[0].id, {...person[0], number: newNumber}).then(response => {
+        personsService.update(person[0].id, { ...person[0], number: newNumber }).then(response => {
           setPersons(persons.map(oldPerson => oldPerson.id !== person[0].id ? oldPerson : response))
           setNotificationMessage('Update ' + newName)
           setTimeout(() => {
@@ -38,8 +38,8 @@ const App = () => {
           }, 5000)
         }).catch(error => {
           setErrorMessage(`Information of ${newName} has already benn removed from server`)
-          setErrorMessage(() => {
-            setNotificationMessage(null)
+          setTimeout(() => {
+            setErrorMessage(null)
           }, 5000)
         })
       }
@@ -52,9 +52,9 @@ const App = () => {
             setNotificationMessage(null)
           }, 5000)
         }).catch(error => {
-          setErrorMessage(`Error`)
-          setErrorMessage(() => {
-            setNotificationMessage(null)
+          setErrorMessage(`Error: ${error.response.data.error}`)
+          setTimeout(() => {
+            setErrorMessage(null)
           }, 5000)
         })
     }
@@ -68,8 +68,8 @@ const App = () => {
         setPersons(persons.filter(person => person.id !== id))
       }).catch(error => {
         setErrorMessage(`Error on delete`)
-        setErrorMessage(() => {
-          setNotificationMessage(null)
+        setTimeout(() => {
+          setErrorMessage(null)
         }, 5000)
       })
     }
@@ -78,8 +78,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMessage} color='green'/>
-      <Notification message={errorMessage} color='red'/>
+      <Notification message={notificationMessage} color='green' />
+      <Notification message={errorMessage} color='red' />
       <Filter handleFilterNameChange={handleFilterNameChange} filterName={filterName} />
       <h2>add a new</h2>
       <PersonForm
